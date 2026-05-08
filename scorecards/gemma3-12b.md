@@ -8,7 +8,7 @@
 
 ## Round 1: Code Generation (Baseline)
 
-**Prompt:** Create a .NET 9 Minimal API with `/weather` and `/weather/alerts` endpoints.
+**Prompt:** Create a .NET 9 Minimal API with a `/weather/{city}` endpoint that looks up coordinates and retrieves the NWS forecast.
 
 | Criteria | Weight | Score (0-10) | Notes |
 |----------|--------|:------------:|-------|

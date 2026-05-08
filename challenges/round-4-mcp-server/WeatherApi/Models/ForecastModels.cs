@@ -4,7 +4,7 @@ namespace WeatherApi.Models;
 /// Top-level forecast response from the NWS API.
 /// </summary>
 public record ForecastResponse(
-    string Zone,
+    string City,
     string Updated,
     List<ForecastPeriod> Periods);
 

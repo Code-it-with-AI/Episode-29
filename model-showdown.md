@@ -53,13 +53,9 @@ Build a **.NET 9 Minimal API** with a connected MCP (Model Context Protocol) too
 ### The Challenge (4 Rounds)
 
 #### Round 1: Code Generation (Baseline)
-> "Create a .NET 9 Minimal API that integrates with the National Weather Service API. The API should include:
-> 1. A `/weather/{zone}` endpoint that retrieves the forecast for a given NWS zone
-> 2. A `/weather/alerts/{zone}` endpoint that retrieves active weather alerts for a given zone
->
-> Read the NWS OpenAPI spec at `https://api.weather.gov/openapi.json` to understand the response schemas. Include proper error handling, structured DTOs, and OpenAPI documentation."
+> "Create a .NET 9 Minimal API that integrates with the National Weather Service API. The API should have a `/weather/{city}` endpoint that accepts a city name, looks up the city's coordinates via the NWS `/points` endpoint, retrieves the forecast, and returns a structured response. Include proper error handling and OpenAPI documentation."
 
-**Evaluates:** C# fluency, .NET 9 idioms, Minimal API patterns, API spec comprehension, DTO mapping from real-world JSON, structured output
+**Evaluates:** C# fluency, .NET 9 idioms, Minimal API patterns, multi-step API integration (city → coordinates → forecast), structured output
 
 #### Round 2: Multi-Step Agent Workflow
 > "The `/weather` endpoint is returning a 403 Forbidden error from the NWS API. Using the tools available to you (`list_files`, `read_file`, `edit_file`, `run_tests`), diagnose the issue, fix it, and verify the fix works. Hint: review the NWS API requirements documented in the showdown spec."
@@ -68,18 +64,17 @@ Build a **.NET 9 Minimal API** with a connected MCP (Model Context Protocol) too
 
 #### Round 3: Vision + Code Understanding
 > Provide a screenshot of:
-> - The Swagger UI page showing the `/weather` and `/weather/alerts` endpoints from Round 1
+> - The Swagger UI page showing the `/weather/{city}` endpoint
 > - A hand-drawn architecture diagram showing: Client → Minimal API → NWS API
 > 
-> Ask: "Based on this architecture, add an in-memory caching layer so we don't hit the NWS API more than once per zone per 15 minutes. Show me the code changes needed."
+> Ask: "Based on this architecture, add an in-memory caching layer so we don't hit the NWS API more than once per city per 15 minutes. Show me the code changes needed."
 
 **Evaluates:** Image comprehension, architectural reasoning, code generation from visual context, .NET `IMemoryCache` / caching patterns
 
 #### Round 4: Skill Composition (Boss Round)
 > "Wrap the weather API from Rounds 1-3 into a complete MCP tool server in .NET that exposes these capabilities:
-> 1. `get_forecast` - Get the NWS forecast for a zone
-> 2. `get_alerts` - Get active weather alerts for a zone
-> 3. `lookup_zone` - Look up a zone ID by state and city using the NWS zones endpoint
+> 1. `get_forecast` - Get the NWS forecast for a city
+> 2. `lookup_city_coordinates` - Look up coordinates for a city name
 > 
 > The server should use the .NET MCP SDK, support stdio transport, include proper tool descriptions for LLM consumption, and reuse the caching layer from Round 3."
 

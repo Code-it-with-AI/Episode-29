@@ -18,16 +18,16 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.MapGet("/weather/{zone}", async (string zone, WeatherService weatherService) =>
+app.MapGet("/weather/{city}", async (string city, WeatherService weatherService) =>
 {
     try
     {
-        var forecast = await weatherService.GetForecastAsync(zone);
+        var forecast = await weatherService.GetForecastForCityAsync(city);
         return Results.Ok(forecast);
     }
     catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
     {
-        return Results.NotFound(new { error = $"Zone '{zone}' not found." });
+        return Results.NotFound(new { error = $"City '{city}' not found or no forecast available." });
     }
     catch (HttpRequestException ex)
     {
@@ -38,35 +38,9 @@ app.MapGet("/weather/{zone}", async (string zone, WeatherService weatherService)
     }
 })
 .WithName("GetWeatherForecast")
-.WithSummary("Get the NWS forecast for a given zone")
-.WithDescription("Retrieves the weather forecast from the National Weather Service API for the specified forecast zone.")
+.WithSummary("Get the NWS forecast for a city")
+.WithDescription("Looks up coordinates for the given city and retrieves the weather forecast from the National Weather Service API.")
 .Produces<WeatherApi.Models.ForecastResponse>(200)
-.Produces(404)
-.Produces(502);
-
-app.MapGet("/weather/alerts/{zone}", async (string zone, WeatherService weatherService) =>
-{
-    try
-    {
-        var alerts = await weatherService.GetAlertsAsync(zone);
-        return Results.Ok(alerts);
-    }
-    catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-    {
-        return Results.NotFound(new { error = $"Zone '{zone}' not found." });
-    }
-    catch (HttpRequestException ex)
-    {
-        return Results.Problem(
-            detail: ex.Message,
-            statusCode: (int?)ex.StatusCode ?? 502,
-            title: "Weather API Error");
-    }
-})
-.WithName("GetWeatherAlerts")
-.WithSummary("Get active weather alerts for a given zone")
-.WithDescription("Retrieves active weather alerts from the National Weather Service API for the specified zone.")
-.Produces<WeatherApi.Models.AlertsResponse>(200)
 .Produces(404)
 .Produces(502);
 

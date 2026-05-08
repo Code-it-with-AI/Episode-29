@@ -4,7 +4,7 @@ Can a local LLM running on consumer hardware replace cloud AI for real coding ta
 
 Each model faces the same challenge: build a **.NET 9 Minimal API** backed by the National Weather Service API, debug a real issue, add caching from a hand-drawn architecture diagram, and ultimately wrap everything into a complete **MCP tool server**. We score each model on correctness, .NET idioms, tool compliance, completeness, and speed.
 
-📺 YouTube Video: *(coming soon)*
+📺 YouTube Video: https://www.youtube.com/live/MROj19EZ7I0 
 
 🏠 Code it with AI Home Page: https://codeitwithai.com
 

@@ -28,7 +28,7 @@ In this episode we run a **Local Model Challenge** — a head-to-head showdown o
 
 ## Challenge Rounds (see `model-showdown.md` for full details)
 
-1. **Code Generation** — Create a .NET 9 Minimal API with `/weather` and `/weather/alerts` endpoints using the NWS API
+1. **Code Generation** — Create a .NET 9 Minimal API with a `/weather/{city}` endpoint that looks up coordinates and retrieves the NWS forecast
 2. **Multi-Step Agent Workflow** — Diagnose and fix a 403 Forbidden error (missing `User-Agent` header)
 3. **Vision + Code Understanding** — Add in-memory caching from a [Swagger UI screenshot](challenges/round-3-vision/swagger-ui.png) and [hand-drawn architecture diagram](challenges/round-3-vision/architecture.png)
 4. **Skill Composition (Boss Round)** — Build a complete MCP tool server with `get_forecast`, `get_alerts`, and `lookup_zone`
