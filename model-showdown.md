@@ -99,9 +99,10 @@ Build a **.NET 9 Minimal API** with a connected MCP (Model Context Protocol) too
 
 1. Pull all models
 2. Use a consistent system prompt for each round
-3. Record: response time, token count, pass/fail per criterion
-4. Score each model 0-10 per round
-5. Crown the champion 👑
+3. Copy `scorecard-template.md` → `scorecards/<model-name>.md` for each model
+4. For each round, paste the prompt, record timing, and score 0-10 per criterion
+5. Calculate weighted scores and fill in the Final Score table
+6. Compare all scorecards and crown the champion 👑
 
 ---
 
