@@ -1,4 +1,4 @@
-# Round 3: Multi-Step Agent Workflow
+# Round 2: Multi-Step Agent Workflow
 
 ## The Prompt
 
@@ -6,7 +6,7 @@
 
 ## Starting Point
 
-A .NET 9 Minimal API with both `/weather/{zone}` and `/weather/alerts/{zone}` endpoints (the expected output of Round 2). **However, the code has a deliberate bug** — the `User-Agent` header is missing from the `HttpClient` configuration, which causes the NWS API to return `403 Forbidden`.
+A .NET 9 Minimal API with both `/weather/{zone}` and `/weather/alerts/{zone}` endpoints (the expected output of Round 1). **However, the code has a deliberate bug** — the `User-Agent` header is missing from the `HttpClient` configuration, which causes the NWS API to return `403 Forbidden`.
 
 See the `WeatherApi/` project in this folder.
 

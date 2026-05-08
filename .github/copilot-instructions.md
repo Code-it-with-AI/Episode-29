@@ -28,11 +28,10 @@ In this episode we run a **Local Model Challenge** — a head-to-head showdown o
 
 ## Challenge Rounds (see `model-showdown.md` for full details)
 
-1. **Code Generation** — Create a .NET 9 Minimal API with a `/weather` endpoint
-2. **Tool Use / Function Calling** — Add a `/weather/alerts` endpoint by reading the NWS OpenAPI spec
-3. **Multi-Step Agent Workflow** — Diagnose and fix a 403 Forbidden error (missing `User-Agent` header)
-4. **Vision + Code Understanding** — Add in-memory caching from a [Swagger UI screenshot](challenges/round-4-vision/swagger-ui.png) and [hand-drawn architecture diagram](challenges/round-4-vision/architecture.png)
-5. **Skill Composition (Boss Round)** — Build a complete MCP tool server with `get_forecast`, `get_alerts`, and `lookup_zone`
+1. **Code Generation** — Create a .NET 9 Minimal API with `/weather` and `/weather/alerts` endpoints using the NWS API
+2. **Multi-Step Agent Workflow** — Diagnose and fix a 403 Forbidden error (missing `User-Agent` header)
+3. **Vision + Code Understanding** — Add in-memory caching from a [Swagger UI screenshot](challenges/round-3-vision/swagger-ui.png) and [hand-drawn architecture diagram](challenges/round-3-vision/architecture.png)
+4. **Skill Composition (Boss Round)** — Build a complete MCP tool server with `get_forecast`, `get_alerts`, and `lookup_zone`
 
 ## Code Style & Conventions
 
@@ -55,16 +54,14 @@ Episode-29/
 ├── model-showdown.md                 ← full challenge spec, scoring rubric, hardware profile
 ├── challenges/                       ← base/starter code for each round
 │   ├── round-1-code-generation/      ← empty start (just prompt README)
-│   ├── round-2-tool-use/             ← working .NET 9 API with /weather endpoint
-│   ├── round-3-agent-workflow/       ← API with deliberate bug (missing User-Agent)
-│   ├── round-4-vision/               ← working API with both endpoints
-│   └── round-5-mcp-server/           ← API with caching, ready for MCP wrapping
+│   ├── round-2-agent-workflow/       ← API with deliberate bug (missing User-Agent)
+│   ├── round-3-vision/               ← working API with both endpoints
+│   └── round-4-mcp-server/           ← API with caching, ready for MCP wrapping
 └── <model-name>/                     ← per-model output folders (created during the challenge)
     ├── round-1/
     ├── round-2/
     ├── round-3/
-    ├── round-4/
-    └── round-5/
+    └── round-4/
 ```
 
 Each `challenges/round-*/` folder contains a `README.md` with the exact prompt and evaluation criteria, plus the starter code (a `.NET 9 Minimal API project`) that the model receives at the beginning of that round. Each round's starter code is the expected successful output of the previous round.

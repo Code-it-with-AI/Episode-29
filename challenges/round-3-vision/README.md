@@ -1,4 +1,4 @@
-# Round 4: Vision + Code Understanding
+# Round 3: Vision + Code Understanding
 
 ## The Prompt
 
@@ -10,7 +10,7 @@
 
 ## Starting Point
 
-A working .NET 9 Minimal API with both `/weather/{zone}` and `/weather/alerts/{zone}` endpoints, properly configured with the `User-Agent` header (the expected output of Round 3). See the `WeatherApi/` project in this folder.
+A working .NET 9 Minimal API with both `/weather/{zone}` and `/weather/alerts/{zone}` endpoints, properly configured with the `User-Agent` header (the expected output of Round 2). See the `WeatherApi/` project in this folder.
 
 ## Requirements
 

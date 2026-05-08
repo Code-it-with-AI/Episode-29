@@ -1,4 +1,4 @@
-# Round 5: Skill Composition (Boss Round)
+# Round 4: Skill Composition (Boss Round)
 
 ## The Prompt
 
@@ -11,7 +11,7 @@
 
 ## Starting Point
 
-A working .NET 9 Minimal API with both endpoints, `User-Agent` header, and in-memory caching (the expected output of Round 4). See the `WeatherApi/` project in this folder.
+A working .NET 9 Minimal API with both endpoints, `User-Agent` header, and in-memory caching (the expected output of Round 3). See the `WeatherApi/` project in this folder.
 
 ## Requirements
 
