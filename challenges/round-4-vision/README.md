@@ -22,9 +22,13 @@ A working .NET 9 Minimal API with both `/weather/{zone}` and `/weather/alerts/{z
 
 ## Visual Input
 
-During the live challenge, the model will receive:
-1. A screenshot of the Swagger UI showing both endpoints
-2. A hand-drawn architecture diagram (Client → API → NWS)
+During the live challenge, the model will receive these two images:
+
+### 1. Swagger UI Screenshot
+![Swagger UI showing both endpoints](swagger-ui.png)
+
+### 2. Hand-Drawn Architecture Diagram
+![Client → Minimal API → NWS API](architecture.png)
 
 The model must interpret these visuals and propose the caching layer insertion point.
 

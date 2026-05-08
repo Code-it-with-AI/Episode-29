@@ -31,7 +31,7 @@ In this episode we run a **Local Model Challenge** — a head-to-head showdown o
 1. **Code Generation** — Create a .NET 9 Minimal API with a `/weather` endpoint
 2. **Tool Use / Function Calling** — Add a `/weather/alerts` endpoint by reading the NWS OpenAPI spec
 3. **Multi-Step Agent Workflow** — Diagnose and fix a 403 Forbidden error (missing `User-Agent` header)
-4. **Vision + Code Understanding** — Add in-memory caching from a screenshot/architecture diagram
+4. **Vision + Code Understanding** — Add in-memory caching from a [Swagger UI screenshot](challenges/round-4-vision/swagger-ui.png) and [hand-drawn architecture diagram](challenges/round-4-vision/architecture.png)
 5. **Skill Composition (Boss Round)** — Build a complete MCP tool server with `get_forecast`, `get_alerts`, and `lookup_zone`
 
 ## Code Style & Conventions
