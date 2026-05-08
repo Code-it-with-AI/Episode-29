@@ -23,8 +23,8 @@ public class WeatherService
         var response = await _httpClient.GetAsync($"/zones/forecast/{zone}/forecast", cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var json = await response.Content.ReadFromStreamAsync(cancellationToken);
-        var root = JsonSerializer.Deserialize<JsonElement>(json);
+        using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var root = await JsonSerializer.DeserializeAsync<JsonElement>(stream, cancellationToken: cancellationToken);
 
         var properties = root.GetProperty("properties");
         var updated = properties.GetProperty("updated").GetString() ?? "unknown";
@@ -45,20 +45,5 @@ public class WeatherService
         }
 
         return new ForecastResponse(Zone: zone, Updated: updated, Periods: periods);
-    }
-
-    private async Task<JsonElement> ReadFromStreamAsync(HttpContent content, CancellationToken cancellationToken)
-    {
-        using var stream = await content.ReadAsStreamAsync(cancellationToken);
-        return await JsonSerializer.DeserializeAsync<JsonElement>(stream, cancellationToken: cancellationToken);
-    }
-}
-
-file static class HttpContentExtensions
-{
-    public static async Task<JsonElement> ReadFromStreamAsync(this HttpContent content, CancellationToken cancellationToken = default)
-    {
-        using var stream = await content.ReadAsStreamAsync(cancellationToken);
-        return await JsonSerializer.DeserializeAsync<JsonElement>(stream, cancellationToken: cancellationToken);
     }
 }
