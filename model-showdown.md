@@ -13,20 +13,20 @@
 
 | # | Model | Params | VRAM Fit | Tools | Vision | Coding | Notes |
 |---|-------|--------|----------|-------|--------|--------|-------|
-| 1 | **Qwen3-Coder:14b** | 14B | ✅ Full GPU | ✅ | ⚠️ Limited | ⭐⭐⭐ | Best .NET/C# coding at this tier |
-| 2 | **Gemma4:12b** | 12B | ✅ Full GPU | ✅ | ✅ | ⭐⭐⭐ | Google multimodal, structured JSON |
-| 3 | **Llama3.2-Vision:11b** | 11B | ✅ Full GPU | ✅ | ✅ | ⭐⭐ | Strong vision + tool calling |
-| 4 | **Qwen3:14b** | 14B | ✅ Full GPU | ✅ | ✅ | ⭐⭐⭐ | General-purpose reasoning powerhouse |
-| 5 | **DeepSeek-Coder-V2:16b** | 16B | ⚠️ Partial offload | ✅ | ✅ | ⭐⭐⭐ | Deep reasoning, needs some CPU offload |
+| 1 | **Qwen3:14b** | 14B | Q3_K_M 6.8 GB | ✅ | ❌ | ⭐⭐⭐ | General-purpose reasoning powerhouse |
+| 2 | **Qwen2.5-Coder:7b** | 7B | Q6_K 5.9 GB | ✅ | ❌ | ⭐⭐⭐ | Purpose-built code model, excellent quality at low VRAM |
+| 3 | **Gemma3:12b** | 12B | Q4_K_M 6.6 GB | ✅ | ✅ | ⭐⭐⭐ | Google multimodal, structured JSON |
+| 4 | **Llama3.2-Vision:11b** | 11B | Q4_K_M 6.1 GB | ✅ | ✅ | ⭐⭐ | Strong vision + tool calling |
+| 5 | **DeepSeek-R1:14b** | 14B | Q3_K_M 6.8 GB | ✅ | ❌ | ⭐⭐⭐ | Deep reasoning, chain-of-thought |
 
 ## Pull Commands
 
 ```bash
-ollama pull qwen3-coder:14b
-ollama pull gemma4:12b
-ollama pull llama3.2-vision:11b
 ollama pull qwen3:14b
-ollama pull deepseek-coder-v2:16b
+ollama pull qwen2.5-coder:7b
+ollama pull gemma3:12b
+ollama pull llama3.2-vision:11b
+ollama pull deepseek-r1:14b
 ```
 
 ## BYOK Configuration

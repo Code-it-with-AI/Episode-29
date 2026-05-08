@@ -12,11 +12,11 @@ In this episode we run a **Local Model Challenge** — a head-to-head showdown o
 
 | # | Model | Params |
 |---|-------|--------|
-| 1 | Qwen3-Coder:14b | 14B |
-| 2 | Gemma4:12b | 12B |
-| 3 | Llama3.2-Vision:11b | 11B |
-| 4 | Qwen3:14b | 14B |
-| 5 | DeepSeek-Coder-V2:16b | 16B |
+| 1 | Qwen3:14b | 14B |
+| 2 | Qwen2.5-Coder:7b | 7B |
+| 3 | Gemma3:12b | 12B |
+| 4 | Llama3.2-Vision:11b | 11B |
+| 5 | DeepSeek-R1:14b | 14B |
 
 ## Key Technologies
 

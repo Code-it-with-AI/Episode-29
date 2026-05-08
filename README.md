@@ -56,11 +56,11 @@ Before starting this episode, you should:
 
 | # | Model | Params | VRAM Fit | Tools | Vision | Coding |
 |---|-------|--------|----------|-------|--------|--------|
-| 1 | **Qwen3-Coder:14b** | 14B | ✅ Full GPU | ✅ | ⚠️ Limited | ⭐⭐⭐ |
-| 2 | **Gemma4:12b** | 12B | ✅ Full GPU | ✅ | ✅ | ⭐⭐⭐ |
-| 3 | **Llama3.2-Vision:11b** | 11B | ✅ Full GPU | ✅ | ✅ | ⭐⭐ |
-| 4 | **Qwen3:14b** | 14B | ✅ Full GPU | ✅ | ✅ | ⭐⭐⭐ |
-| 5 | **DeepSeek-Coder-V2:16b** | 16B | ⚠️ Partial offload | ✅ | ✅ | ⭐⭐⭐ |
+| 1 | **Qwen3:14b** | 14B | Q3_K_M 6.8 GB | ✅ | ❌ | ⭐⭐⭐ |
+| 2 | **Qwen2.5-Coder:7b** | 7B | Q6_K 5.9 GB | ✅ | ❌ | ⭐⭐⭐ |
+| 3 | **Gemma3:12b** | 12B | Q4_K_M 6.6 GB | ✅ | ✅ | ⭐⭐⭐ |
+| 4 | **Llama3.2-Vision:11b** | 11B | Q4_K_M 6.1 GB | ✅ | ✅ | ⭐⭐ |
+| 5 | **DeepSeek-R1:14b** | 14B | Q3_K_M 6.8 GB | ✅ | ❌ | ⭐⭐⭐ |
 
 ## Demo Repository
 
@@ -91,11 +91,11 @@ Episode-29/
 **Quick start:**
 ```bash
 # Pull all 5 models
-ollama pull qwen3-coder:14b
-ollama pull gemma4:12b
-ollama pull llama3.2-vision:11b
 ollama pull qwen3:14b
-ollama pull deepseek-coder-v2:16b
+ollama pull qwen2.5-coder:7b
+ollama pull gemma3:12b
+ollama pull llama3.2-vision:11b
+ollama pull deepseek-r1:14b
 
 # Verify Ollama is running
 curl http://localhost:11434/v1/models
