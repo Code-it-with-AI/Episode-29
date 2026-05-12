@@ -10,13 +10,15 @@ In this episode we run a **Local Model Challenge** — a head-to-head showdown o
 
 ## The Contenders
 
+> All models were selected for confirmed **tool/function calling** support via Ollama, required by GitHub Copilot BYOK.
+
 | # | Model | Params |
 |---|-------|--------|
-| 1 | Qwen3:14b | 14B |
+| 1 | Qwen3:8b | 8B |
 | 2 | Qwen2.5-Coder:7b | 7B |
 | 3 | Gemma3:12b | 12B |
-| 4 | Llama3.2-Vision:11b | 11B |
-| 5 | DeepSeek-R1:14b | 14B |
+| 4 | Mistral-Nemo:12b | 12B |
+| 5 | Phi-4:14b | 14B |
 
 ## Key Technologies
 
