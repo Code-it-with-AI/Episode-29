@@ -1,121 +1,70 @@
-# Episode 29: Local Model Challenge — Ollama Showdown
+# Episode 29: Local Language Model Roundup #1
 
-Can a local LLM running on consumer hardware replace cloud AI for real coding tasks? In this episode, we find out. We pit **5 open-source models** against each other in a 4-round progressive coding challenge — all running locally via [Ollama](https://ollama.com) on an RTX 3070 with 64 GB RAM. No cloud. No API keys. Just raw local inference.
+Can a local LLM running on consumer hardware replace cloud AI for real coding tasks? In this episode, we find out. We pit **5 open-source models** against each other to see how they stack up — all running locally via [Ollama](https://ollama.com) on an AMD Ryzen 9 9990X 12-core processor with 96 GB RAM and an NVIDIA GeForce RTX 5090 graphics card with 32GB of VRAM. No cloud. No API keys. Just raw local inference.
 
-Each model faces the same challenge: build a **.NET 9 Minimal API** backed by the National Weather Service API, debug a real issue, add caching from a hand-drawn architecture diagram, and ultimately wrap everything into a complete **MCP tool server**. We score each model on correctness, .NET idioms, tool compliance, completeness, and speed.
-
-📺 YouTube Video: https://www.youtube.com/live/MROj19EZ7I0 
+📺 YouTube Video: https://youtu.be/MROj19EZ7I0
 
 🏠 Code it with AI Home Page: https://codeitwithai.com
 
 ---
 
-## What We'll Cover
+## The Test
 
-1. **The Local Model Landscape** — Why running models locally matters for privacy, cost, latency, and offline development — and where the trade-offs are vs. cloud models
-2. **Ollama + GitHub Copilot BYOK** — Setting up Ollama as a local inference server and connecting it to GitHub Copilot via Bring-Your-Own-Key configuration
-3. **The Contenders** — Introducing 5 models that fit in 8 GB VRAM: Qwen3-Coder:14b, Gemma4:12b, Llama3.2-Vision:11b, Qwen3:14b, and DeepSeek-Coder-V2:16b
-4. **Live: 4-Round Showdown** — Running each model through progressive challenges: code generation → agent debugging → vision-based architecture → MCP server composition
-5. **Scoring & Results** — Head-to-head comparison across all rounds, crowning the local model champion
+The test was to host the model in Ollama on another machine and use GitHub Copilot CLI against it to flesh out a new Blazor Server app with a file manager page.
 
-## Learning Objectives
+The **Gemma4Test** project is the result.
 
-By the end of this episode, you'll be able to:
+## Ollama Models and Results
 
-- **Set up** Ollama as a local model runtime and connect it to GitHub Copilot via BYOK
-- **Evaluate** local LLMs for coding tasks using a structured, repeatable benchmark
-- **Compare** model strengths: code generation quality, debugging ability, vision comprehension, and multi-file composition
-- **Identify** which local models are viable replacements for cloud models in .NET development workflows
-- **Build** your own model evaluation framework using progressive challenge rounds with consistent scoring
+### **Gemma4** 
 
-## Prerequisites
+Here's the prompt:
 
-Before starting this episode, you should:
+> I want to create an API-based file upload functionality. So, I need a Files folder to receive files. In the Blazor code I want to break a selected file up into chunks. You'll need a class (FileChunk.cs) that will be passed to the api endpoint. This class will have to keep the file name, the number of chunks, the chunk number of this chunk, a byte array to hold the data for the chunk. The api will open the file, seek to the appropriate location, and write the data. The Blazor page should show a progress bar as the file chunks are uploaded.
 
-- Have a **GPU with 8+ GB VRAM** (we use an NVIDIA RTX 3070) or sufficient RAM for CPU inference
-- Have **Ollama** installed ([ollama.com](https://ollama.com))
-- Have **.NET 9 SDK** installed (`dotnet --version` → 9.x)
-- Have an active **GitHub Copilot license** with BYOK support (Business or Enterprise)
-- Be comfortable with **C# and .NET Minimal APIs** (we're evaluating model output, not teaching .NET basics)
+It created the API controller, the endpoint, and the FileChunk.cs class, but could not figure out how to write the Blazor page. 
+
+### **Gpt-oss:latest**
+
+Did not work at all.
+
+### **Granite4.1:3b**
+
+Couldn't tell me ANYTHING about the project. Hallucinated functionality that was not there.
+
+### **laguna-xs.2**
+
+Gave me a great description of the app and what it does.
+Here's the prompt I gave it:
+
+> I want to flesh out the FileManager page with a list of files and the ability to download, rename, and delete files. The list should update whenever a file is added, renamed, or deleted.
+
+Verdict: Slow and not particularly thorough. I gave up on it
+
+### **Qwen3.6:latest.**
+
+Here's the prompt:
+
+> In FileManager.razor I want to break a selected file up into chunks which will be passed to the api endpoint. The api will open the file, seek to the appropriate location, and write the data. The Blazor page should show a progress bar as the file chunks are uploaded.
+
+Awesome. In the same class as qwen3-coder:30b. It found bugs as it was writing the code and fixed them. I would use this in the real world.
+
+Once it had completed the file manager page, I gave it this prompt to fix bugs, which it did:
+
+> The FileManager page doesn't show existing files correctly. First of all, I want to remove the uploads folder under the wwwroot. The files are stored in the Files folder. I want a method that gets all the files in the Files folder, uses a FileInfo to get the information, and shows it in the list on the FileManager page. This method needs be called on startup, and whenever a file is uploaded, renamed, or deleted. Currently it shows no file name and zero for the size.
+
+### **qwen3-coder:30b**
+
+Shown in episode 27. Pretty darn good. Couldn't implement chunked file uploads correctly in a previous test. I didn't use it for this project, which I started from scratch.
 
 ---
 
 ## Resource Links
 
 - **Ollama:** https://ollama.com — Local model runtime
-- **Ollama Model Library:** https://ollama.com/library — Browse available models
+- **Ollama Model Library:** https://ollama.com/search — Browse available models
 - **GitHub Copilot BYOK Docs:** https://docs.github.com/copilot/managing-copilot/managing-github-copilot-in-your-organization/managing-the-copilot-subscription-for-your-organization/managing-copilot-knowledge-bases
-- **NWS API:** https://api.weather.gov/ — The real-world API used in all challenges
-- **NWS OpenAPI Spec:** https://api.weather.gov/openapi.json
-- **.NET MCP SDK:** https://github.com/modelcontextprotocol/csharp-sdk
 - **GitHub Copilot Official Docs:** https://docs.github.com/copilot
-
----
-
-## The Contenders
-
-| # | Model | Params | VRAM Fit | Tools | Vision | Coding |
-|---|-------|--------|----------|-------|--------|--------|
-| 1 | **Qwen3:14b** | 14B | Q3_K_M 6.8 GB | ✅ | ❌ | ⭐⭐⭐ |
-| 2 | **Qwen2.5-Coder:7b** | 7B | Q6_K 5.9 GB | ✅ | ❌ | ⭐⭐⭐ |
-| 3 | **Gemma3:12b** | 12B | Q4_K_M 6.6 GB | ✅ | ✅ | ⭐⭐⭐ |
-| 4 | **Llama3.2-Vision:11b** | 11B | Q4_K_M 6.1 GB | ✅ | ✅ | ⭐⭐ |
-| 5 | **DeepSeek-R1:14b** | 14B | Q3_K_M 6.8 GB | ✅ | ❌ | ⭐⭐⭐ |
-
-## Demo Repository
-
-This episode's content lives entirely in this folder. The `challenges/` directory contains the starter code and prompts for each round of the showdown:
-
-```
-Episode-29/
-├── .github/
-│   └── copilot-instructions.md      Copilot context for this repository
-├── challenges/
-│   ├── round-1-code-generation/     Prompt only — model creates from scratch
-│   │   └── README.md                The Round 1 challenge prompt
-│   ├── round-2-agent-workflow/      API with deliberate bug (missing User-Agent)
-│   │   ├── README.md                The Round 2 challenge prompt
-│   │   └── WeatherApi/              .NET 9 starter project with the bug
-│   ├── round-3-vision/              Working API — model adds caching from visuals
-│   │   ├── README.md                The Round 3 challenge prompt
-│   │   ├── swagger-ui.png           Swagger UI screenshot (visual input)
-│   │   ├── architecture.png         Hand-drawn architecture diagram (visual input)
-│   │   └── WeatherApi/              .NET 9 starter project
-│   └── round-4-mcp-server/          API with caching — model wraps into MCP server
-│       ├── README.md                The Round 4 challenge prompt
-│       └── WeatherApi/              .NET 9 starter project with caching
-├── model-showdown.md                Full challenge spec, hardware profile, scoring rubric
-└── README.md                        ← You are here
-```
-
-**Quick start:**
-```bash
-# Pull all 5 models
-ollama pull qwen3:14b
-ollama pull qwen2.5-coder:7b
-ollama pull gemma3:12b
-ollama pull llama3.2-vision:11b
-ollama pull deepseek-r1:14b
-
-# Verify Ollama is running
-curl http://localhost:11434/v1/models
-
-# Build a challenge starter project (e.g., Round 2)
-cd challenges/round-2-agent-workflow/WeatherApi
-dotnet build
-```
-
----
-
-## Scoring Rubric
-
-| Criteria | Weight | Description |
-|----------|--------|-------------|
-| Correctness | 30% | Does the code compile and run? |
-| .NET Idioms | 20% | Modern C#, proper async/await, DI patterns |
-| Tool Compliance | 20% | Correct tool call format, parameters, response handling |
-| Completeness | 15% | All parts of the prompt addressed |
-| Speed | 15% | Time to first token + total generation time |
 
 ---
 

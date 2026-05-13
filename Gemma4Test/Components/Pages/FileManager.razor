@@ -1,0 +1,346 @@
+@page "/filemanager"
+@using Gemma4Test.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using System.IO
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+@inject IWebHostEnvironment WebHostEnv
+
+<PageTitle>File Manager</PageTitle>
+
+<h1>File Manager</h1>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5 class="mb-0">Upload File</h5>
+    </div>
+    <div class="card-body">
+        <InputFile @ref="fileInput" OnChange="OnFileSelected" class="form-control" />
+    </div>
+</div>
+
+@if (selectedFile != null)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>Selected File: @selectedFile.Name</h5>
+            <p class="mb-1">Size: @FormatFileSize(selectedFile.Size)</p>
+            <button class="btn btn-primary mt-2" @onclick="StartUpload" disabled="@uploading">
+                @(uploading ? "Uploading..." : "Upload File")
+            </button>
+        </div>
+    </div>
+
+    @if (uploading)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>Uploading...</h5>
+                <div class="progress" style="height: 25px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                         role="progressbar"
+                         style="width: @percentComplete%;"
+                         aria-valuenow="@percentComplete"
+                         aria-valuemin="0"
+                         aria-valuemax="100">
+                        @percentComplete%
+                    </div>
+                </div>
+                <p class="mt-2 mb-0">
+                    Uploaded @uploadedChunks / @totalChunks chunks
+                    @if (_errorCount > 0)
+                    {
+                        <span class="text-danger"> | @_errorCount errors</span>
+                    }
+                </p>
+            </div>
+        </div>
+    }
+    else if (uploadComplete)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="alert alert-success" role="alert">
+                    <strong>Upload complete!</strong> File uploaded successfully.
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5 class="mb-0">Files</h5>
+    </div>
+    <div class="card-body">
+        @if (files.Count == 0)
+        {
+            <p class="text-muted">No files found.</p>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Size</th>
+                        <th>Modified</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var file in files)
+                    {
+                        <tr>
+                            <td>@file.Name</td>
+                            <td>@FormatFileSize(file.Size)</td>
+                            <td>@file.Modified.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1" @onclick="() => DownloadFile(file.Name)">Download</button>
+                                <button class="btn btn-sm btn-outline-secondary me-1" @onclick="() => ShowRenameDialog(file.Name)">Rename</button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteFile(file.Name)">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@if (showRenameModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Rename File</h5>
+                    <button class="btn-close" @onclick="CloseRenameModal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" @bind="newFileName" placeholder="New file name" />
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseRenameModal">Cancel</button>
+                    <button class="btn btn-primary" @onclick="ConfirmRename" disabled="@renaming">@(renaming ? "Renaming..." : "Rename")</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private InputFile? fileInput;
+    private IBrowserFile? selectedFile;
+    private bool uploading = false;
+    private bool uploadComplete = false;
+    private int uploadedChunks = 0;
+    private int totalChunks = 0;
+    private int _errorCount = 0;
+    private int percentComplete = 0;
+    private const long ChunkSize = 500 * 1024; // 500 KB chunks
+
+    private List<UploadedFile> files = new();
+    private bool showRenameModal = false;
+    private string fileToRename = "";
+    private string newFileName = "";
+    private bool renaming = false;
+
+    protected override async Task OnInitializedAsync()
+        {
+            await LoadFiles();
+        }
+
+        private async Task OnFileSelected(InputFileChangeEventArgs context)
+        {
+            if (context?.File == null) return;
+            ResetState();
+            selectedFile = context.File;
+            StateHasChanged();
+        }
+
+        private async Task StartUpload()
+        {
+            if (selectedFile == null) return;
+
+            uploading = true;
+            uploadComplete = false;
+            _errorCount = 0;
+            StateHasChanged();
+
+            try
+            {
+              long fileSize = selectedFile.Size;
+              totalChunks = (int)Math.Ceiling(fileSize / (double)ChunkSize);
+              if (totalChunks == 0) totalChunks = 1;
+              uploadedChunks = 0;
+
+              using var httpClient = new HttpClient();
+              using var stream = selectedFile.OpenReadStream(maxAllowedSize: fileSize);
+              byte[] chunkData = new byte[ChunkSize];
+
+              for (int i = 0; i < totalChunks; i++)
+              {
+                     long offset = (long)i * ChunkSize;
+                     int toRead = (int)Math.Min(ChunkSize, fileSize - offset);
+
+                     int bytesToDrain = toRead;
+                     int bufferOffset = 0;
+                     while (bytesToDrain > 0)
+                     {
+                         int bytesRead = await stream.ReadAsync(chunkData.AsMemory(bufferOffset, bytesToDrain));
+                         if (bytesRead == 0) break;
+                         bufferOffset += bytesRead;
+                         bytesToDrain -= bytesRead;
+                     }
+
+                     int totalRead = toRead - bytesToDrain;
+                     byte[] payload = totalRead == ChunkSize ? chunkData : chunkData[..totalRead];
+
+                     using var formData = new MultipartFormDataContent();
+                     formData.Add(new ByteArrayContent(payload), "data", "data");
+                     formData.Add(new StringContent(selectedFile.Name), "fileName");
+                     formData.Add(new StringContent(i.ToString()), "chunkNumber");
+                     formData.Add(new StringContent(totalChunks.ToString()), "totalChunks");
+                     formData.Add(new StringContent(offset.ToString()), "offset");
+
+                     var url = NavManager.ToAbsoluteUri("api/Upload").ToString();
+                     var response = await httpClient.PostAsync(url, formData);
+
+                     if (response.IsSuccessStatusCode)
+                     {
+                         uploadedChunks++;
+                         percentComplete = (int)((float)uploadedChunks / totalChunks * 100);
+                         StateHasChanged();
+                     }
+                     else
+                     {
+                         _errorCount++;
+                     }
+
+                     if (i < totalChunks - 1)
+                     {
+                         await Task.Yield();
+                         await Task.Delay(50);
+                     }
+              }
+
+              if (_errorCount == 0)
+              {
+                  uploadComplete = true;
+                  await LoadFiles();
+                  StateHasChanged();
+              }
+            }
+            catch
+            {
+              _errorCount = totalChunks;
+            }
+            finally
+            {
+              uploading = false;
+              StateHasChanged();
+            }
+        }
+
+        private void ResetState()
+        {
+            uploading = false;
+            uploadComplete = false;
+            uploadedChunks = 0;
+            totalChunks = 0;
+            percentComplete = 0;
+            _errorCount = 0;
+            selectedFile = null;
+        }
+
+        private async Task LoadFiles()
+        {
+            try
+            {
+                var uploadPath = Path.Combine(WebHostEnv.ContentRootPath, "Files");
+                files = Directory.GetFiles(uploadPath)
+                    .Select(f => new UploadedFile
+                    {
+                        Name = Path.GetFileName(f),
+                        Size = new FileInfo(f).Length,
+                        Modified = new FileInfo(f).LastWriteTime
+                    })
+                    .OrderByDescending(f => f.Modified)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading files: {ex.Message}");
+            }
+
+            StateHasChanged();
+        }
+
+        private async Task DownloadFile(string fileName)
+        {
+            var url = NavManager.ToAbsoluteUri($"api/Upload/download?fileName={Uri.EscapeDataString(fileName)}").ToString();
+            await JS.InvokeVoidAsync("open", url);
+        }
+
+        private void ShowRenameDialog(string fileName)
+        {
+            fileToRename = fileName;
+            newFileName = fileName;
+            showRenameModal = true;
+        }
+
+        private void CloseRenameModal()
+        {
+            showRenameModal = false;
+            fileToRename = "";
+            newFileName = "";
+        }
+
+        private async Task ConfirmRename()
+        {
+            if (string.IsNullOrEmpty(newFileName) || newFileName == fileToRename)
+            {
+              CloseRenameModal();
+              return;
+            }
+
+            renaming = true;
+            StateHasChanged();
+
+            using var httpClient = new HttpClient();
+            var content = new FormUrlEncodedContent(new[]
+            {
+              new KeyValuePair<string, string>("oldName", fileToRename),
+              new KeyValuePair<string, string>("newName", newFileName)
+            });
+            var response = await httpClient.PostAsync(NavManager.ToAbsoluteUri("api/Upload/rename").ToString(), content);
+
+            renaming = false;
+            CloseRenameModal();
+
+            if (response.IsSuccessStatusCode) await LoadFiles();
+        }
+
+        private async Task DeleteFile(string fileName)
+        {
+            if (!await JS.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {fileName}?")) return;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.DeleteAsync(NavManager.ToAbsoluteUri($"api/Upload/delete?fileName={Uri.EscapeDataString(fileName)}").ToString());
+            if (response.IsSuccessStatusCode) await LoadFiles();
+        }
+
+        private static string FormatFileSize(long bytes)
+        {
+            string[] sizes = { "B", "KB", "MB", "GB" };
+            double len = bytes;
+            int order = 0;
+            while (len >= 1024 && order < sizes.Length - 1)
+            {
+              order++;
+              len /= 1024;
+            }
+            return $"{len:0.##} {sizes[order]}";
+        }
+        }
